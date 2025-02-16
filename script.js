@@ -141,38 +141,21 @@ function collisionDetection() {
 
 // Colisión con la paleta
 function paddleCollision() {
-    if (y + dy > canvas.height - ballRadius) { // Si la pelota toca el suelo
-        // Mostrar mensaje de "Has perdido"
-        ctx.font = "24px Arial";
-        ctx.fillStyle = "red";
-        ctx.textAlign = "center";
-        ctx.fillText("Has perdido", canvas.width / 2, canvas.height / 2);
-
-        // Detener la animación
-        cancelAnimationFrame(animationFrame);
-
-        // Esperar 3 segundos y reiniciar el juego
-        setTimeout(restartGame, 3000);
-    } else if (y + dy > canvas.height - paddleHeight - ballRadius) {
-        if (x > paddleX && x < paddleX + paddleWidth) {
-            dy = -dy; // Rebote normal (cuando la pelota toca la paleta)
-            let impact = (x - (paddleX + paddleWidth / 2)) / (paddleWidth / 2);
-            dx = impact * 5; // Modifica la dirección según el impacto
-        }
-    }
-}
-
-/*function paddleCollision() {
     if (y + dy > canvas.height - paddleHeight - ballRadius) {
         if (x > paddleX && x < paddleX + paddleWidth) {
             dy = -dy; // Rebote normal (cuando la pelota toca la paleta)
             let impact = (x - (paddleX + paddleWidth / 2)) / (paddleWidth / 2);
             dx = impact * 5; // Modifica la dirección según el impacto
         } else {
+            ctx.font = "24px Arial";
+            ctx.fillStyle = "red";
+            ctx.textAlign = "center";
+            ctx.fillText("Has perdido", canvas.width / 2, canvas.height / 2);
+            setTimeout(restartGame, 3000);
             restartGame(); // Perdiste (si toca el suelo, el juego se reinicia)
         }
     }
-}*/
+}
 
 // Reiniciar juego 
 document.getElementById("restartBtn").addEventListener("click", restartGame); //Recarga la página para reiniciar el juego.

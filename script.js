@@ -151,7 +151,6 @@ function paddleCollision() {
             ctx.fillStyle = "red";
             ctx.textAlign = "center";
             ctx.fillText("Has perdido", canvas.width / 2, canvas.height / 2);
-            setTimeout(restartGame, 3000);
             restartGame(); // Perdiste (si toca el suelo, el juego se reinicia)
         }
     }

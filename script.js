@@ -1,28 +1,34 @@
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+//Configuramos el Canvas
+const canvas = document.getElementById("gameCanvas"); //Obtenemos el elemento Canvas
+const ctx = canvas.getContext("2d"); //Su contexto 2d para dibujar en él
 
+//Definimos el ancho y alto del área de juego.
 canvas.width = 480;
 canvas.height = 320;
 
 // Variables del juego
-let score = 0;
-let highScore = localStorage.getItem("highScore") || 0;
+let score = 0; //Puntaje del jugador.
+let highScore = localStorage.getItem("highScore") || 0; //Máxima puntuación guardada en localStorage
 document.getElementById("highScore").innerText = highScore;
 
+//Definimos el tamaño de la paleta y su posición inicial.
 const paddleHeight = 10, paddleWidth = 75;
 let paddleX = (canvas.width - paddleWidth) / 2;
 
-const ballRadius = 8;
-let x = canvas.width / 2;
-let y = canvas.height - 30;
+const ballRadius = 8; //Tamaño de la bola.
+//Posición inicial de la bola.
+let x = canvas.width / 2; 
+let y = canvas.height - 30; 
 
 // Velocidad inicial de la bola
 let dx = 2, dy = -2;
 
+//Configura la cuadrícula de ladrillos.
 const brickRowCount = 3, brickColumnCount = 5;
 const brickWidth = 75, brickHeight = 20, brickPadding = 10;
 const brickOffsetTop = 30, brickOffsetLeft = 30;
 
+//Creamos una matriz de ladrillos, cada uno con una posición (x, y) y un estado (1 = activo, 0 = destruido).
 let bricks = [];
 
 for (let c = 0; c < brickColumnCount; c++) {
@@ -38,6 +44,7 @@ let rightPressed = false, leftPressed = false;
 document.addEventListener("keydown", keyDownHandler);
 document.addEventListener("keyup", keyUpHandler);
 
+//Escucha las teclas izquierda: ArrowLeft / y derecha: ArrowRight para mover la paleta.
 function keyDownHandler(e) {
     if (e.key === "Right" || e.key === "ArrowRight") rightPressed = true;
     else if (e.key === "Left" || e.key === "ArrowLeft") leftPressed = true;
@@ -48,8 +55,9 @@ function keyUpHandler(e) {
     else if (e.key === "Left" || e.key === "ArrowLeft") leftPressed = false;
 }
 
-// Movimiento con botones virtuales
-document.getElementById("leftBtn").addEventListener("mousedown", () => leftPressed = true);
+// Movimiento con botones virtuales y control táctil para dispositivos móviles
+// mousedown y mouseup activan el movimiento
+document.getElementById("leftBtn").addEventListener("mousedown", () => leftPressed = true); 
 document.getElementById("leftBtn").addEventListener("mouseup", () => leftPressed = false);
 document.getElementById("rightBtn").addEventListener("mousedown", () => rightPressed = true);
 document.getElementById("rightBtn").addEventListener("mouseup", () => rightPressed = false);
@@ -68,7 +76,7 @@ canvas.addEventListener("touchmove", function (e) {
     if (paddleX > canvas.width - paddleWidth) paddleX = canvas.width - paddleWidth;
 });
 
-// Dibujar la pelota
+// Dibujamos la pelota en su posición actual x,y
 function drawBall() {
     ctx.beginPath();
     ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
@@ -77,7 +85,7 @@ function drawBall() {
     ctx.closePath();
 }
 
-// Dibujar la paleta
+// Dibujamos la paleta en su posición actual
 function drawPaddle() {
     ctx.beginPath();
     ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
@@ -86,7 +94,7 @@ function drawPaddle() {
     ctx.closePath();
 }
 
-// Dibujar los ladrillos
+// Dibujamos los ladrillos sólo si status ===1
 function drawBricks() {
     for (let c = 0; c < brickColumnCount; c++) {
         for (let r = 0; r < brickRowCount; r++) {
@@ -115,9 +123,9 @@ function collisionDetection() {
                     x + ballRadius > b.x && x - ballRadius < b.x + brickWidth &&
                     y + ballRadius > b.y && y - ballRadius < b.y + brickHeight
                 ) {
-                    dy = -dy;
-                    b.status = 0;
-                    score += 10;
+                    dy = -dy; //Rebota
+                    b.status = 0; //El ladrillo desaparece
+                    score += 10; //Se suman 10 puntos al marcador
                     document.getElementById("score").innerText = score;
 
                     // Aumentar velocidad progresivamente
@@ -133,19 +141,41 @@ function collisionDetection() {
 
 // Colisión con la paleta
 function paddleCollision() {
-    if (y + dy > canvas.height - paddleHeight - ballRadius) {
+    if (y + dy > canvas.height - ballRadius) { // Si la pelota toca el suelo
+        // Mostrar mensaje de "Has perdido"
+        ctx.font = "24px Arial";
+        ctx.fillStyle = "red";
+        ctx.textAlign = "center";
+        ctx.fillText("Has perdido", canvas.width / 2, canvas.height / 2);
+
+        // Detener la animación
+        cancelAnimationFrame(animationFrame);
+
+        // Esperar 3 segundos y reiniciar el juego
+        setTimeout(restartGame, 3000);
+    } else if (y + dy > canvas.height - paddleHeight - ballRadius) {
         if (x > paddleX && x < paddleX + paddleWidth) {
-            dy = -dy; // Rebote normal
+            dy = -dy; // Rebote normal (cuando la pelota toca la paleta)
             let impact = (x - (paddleX + paddleWidth / 2)) / (paddleWidth / 2);
             dx = impact * 5; // Modifica la dirección según el impacto
-        } else {
-            restartGame(); // Perdiste
         }
     }
 }
 
-// Reiniciar juego
-document.getElementById("restartBtn").addEventListener("click", restartGame);
+/*function paddleCollision() {
+    if (y + dy > canvas.height - paddleHeight - ballRadius) {
+        if (x > paddleX && x < paddleX + paddleWidth) {
+            dy = -dy; // Rebote normal (cuando la pelota toca la paleta)
+            let impact = (x - (paddleX + paddleWidth / 2)) / (paddleWidth / 2);
+            dx = impact * 5; // Modifica la dirección según el impacto
+        } else {
+            restartGame(); // Perdiste (si toca el suelo, el juego se reinicia)
+        }
+    }
+}*/
+
+// Reiniciar juego 
+document.getElementById("restartBtn").addEventListener("click", restartGame); //Recarga la página para reiniciar el juego.
 
 function restartGame() {
     document.location.reload();

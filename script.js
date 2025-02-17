@@ -1,3 +1,4 @@
+//Por Manuela González - Laura Ríos
 //Configuramos el Canvas
 const canvas = document.getElementById("gameCanvas"); //Obtenemos el elemento Canvas
 const ctx = canvas.getContext("2d"); //Su contexto 2d para dibujar en él
@@ -23,7 +24,7 @@ let y = canvas.height - 30;
 let dx = 2, dy = -2;
 
 const brickRowCount = 3, brickColumnCount = 5; //Número de filas y columnas de bloques
-const brickWidth = 75, brickHeight = 20, brickPadding = 10; //Tamaño de cada bloque (Tamaño de cada bloque con brickPadding)
+const brickWidth = 75, brickHeight = 20, brickPadding = 10; //Tamaño de cada bloque (con brickPadding)
 const brickOffsetTop = 30, brickOffsetLeft = 30; //Margen desde el borde superior e izquierdo
 
 let bricks = []; //Matriz que almacena los bloques
